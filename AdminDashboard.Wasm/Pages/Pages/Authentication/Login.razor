@@ -1,5 +1,4 @@
-﻿@page "/"
-@page "/pages/authentication/login"
+﻿@page "/pages/authentication/login"
 @layout LoginLayout
 @inject ISnackbar Snackbar
 @using System.Net.Http
@@ -15,9 +14,9 @@
 
 <MudText>Aun no eres cliente? <MudLink Href="/pages/authentication/register">Contacta con nosotros</MudLink></MudText>
 
-<MudTextField T="string" Value="@("escribe tu email")" Label="E-mail" Variant="Variant.Outlined" Class="my-6"></MudTextField>
+<MudTextField T="string" @bind-Value="model.Email" Label="E-mail" Variant="Variant.Outlined" Class="my-6"></MudTextField>
 
-<MudTextField @bind-Value="@Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
+<MudTextField @bind-Value="model.Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" />
 
 <div Class="d-flex justify-space-between align-center">
     <MudCheckBox T="bool" Label="Recuerdame?" Color="Color.Primary" Class="ml-n1 my-3" @bind-Checked="@CheckBoxRememberMe" @onclick="@ToggleCheckBox"></MudCheckBox>
@@ -25,16 +24,53 @@
 </div>
 
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Link="/personal/dashboardadmin" Size="Size.Large" FullWidth="true">Ingresa</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick=@HandleValidSubmit FullWidth="true">
+    @if (loading)
+    {
+<MudProgressCircular Color="Color.Default" Indeterminate="true"/>}
+    Ingresa
+</MudButton>
+@if (!string.IsNullOrEmpty(error))
+{
+    Snackbar.Add(@error, Severity.Error);
+}
 
-@code {
-
-    string Password { get; set; } = "SamplePassWord";
+@code {string Password { get; set; } = "SamplePassWord";
+    private bool loading;
+    private string error;
 
     bool PasswordVisibility;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     bool CheckBoxRememberMe { get; set; } = false;
+    private Model model = new Model();
+
+    protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (AuthenticationService.User != null)
+        {
+            NavigationManager.NavigateTo("");
+        }
+    }
+    private async void HandleValidSubmit()
+    {
+        loading = true;
+        try
+        {
+            await AuthenticationService.Login(model.Email, model.Password);
+            var returnUrl = NavigationManager.QueryString("returnUrl") ?? "/";            
+            NavigationManager.NavigateTo(returnUrl);
+            loading = false;
+            Console.WriteLine(AuthenticationService.User.UserName);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            loading = false;
+            StateHasChanged();
+        }
+    }
 
     void TogglePasswordVisibility()
     {
@@ -50,15 +86,23 @@ else
     PasswordInputIcon = Icons.Material.Filled.Visibility;
     PasswordInput = InputType.Text;
 }}
-void ToggleCheckBox()
-{
-if (CheckBoxRememberMe)
-{
-    Snackbar.Add("Credenciales eliminados.", Severity.Error);
-}
-else
-{
-    Snackbar.Add("Credenciales almacenados.", Severity.Success);
-}
-}
+        void ToggleCheckBox()
+        {
+            if (CheckBoxRememberMe)
+            {
+                Snackbar.Add("Credenciales eliminados.", Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Credenciales almacenados.", Severity.Success);
+            }
+        }
+        private class Model
+        {
+            [Required]
+            public string Email { get; set; }
+
+            [Required]
+            public string Password { get; set; }
+        }
 }

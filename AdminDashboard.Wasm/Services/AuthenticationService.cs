@@ -36,9 +36,9 @@ namespace AdminDashboard.Wasm.Services
             User = await _localStorageService.GetItem<User>("user");
         }
 
-        public async Task Login(string username, string password)
+        public async Task Login(string email, string password)
         {
-            User = await _httpService.Post<User>("/users/authenticate", new { username, password });
+            User = await _httpService.Post<User>("/api/auth/signin", new { email, password });
             await _localStorageService.SetItem("user", User);
         }
 
