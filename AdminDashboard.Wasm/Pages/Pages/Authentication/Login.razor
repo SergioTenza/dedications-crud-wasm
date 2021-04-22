@@ -4,9 +4,9 @@
 @inject ISnackbar Snackbar
 @using System.Net.Http
 @inject HttpClient Http
-@using AdminDashboard.Wasm.Models
-@using System.Text.Json;
-@using System.Text.Json.Serialization;
+@using System.ComponentModel.DataAnnotations
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
 
 
 
@@ -38,27 +38,27 @@
 
     void TogglePasswordVisibility()
     {
-    @if (PasswordVisibility)
-    {
-        PasswordVisibility = false;
-        PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-        PasswordInput = InputType.Password;
-    }
-    else
-    {
-        PasswordVisibility = true;
-        PasswordInputIcon = Icons.Material.Filled.Visibility;
-        PasswordInput = InputType.Text;
-    }}
+@if (PasswordVisibility)
+{
+    PasswordVisibility = false;
+    PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    PasswordInput = InputType.Password;
+}
+else
+{
+    PasswordVisibility = true;
+    PasswordInputIcon = Icons.Material.Filled.Visibility;
+    PasswordInput = InputType.Text;
+}}
 void ToggleCheckBox()
 {
-    if (CheckBoxRememberMe)
-    {
-        Snackbar.Add("Credenciales eliminados.", Severity.Error);        
-    }
-    else
-    {
-        Snackbar.Add("Credenciales almacenados.", Severity.Success);        
-    }
+if (CheckBoxRememberMe)
+{
+    Snackbar.Add("Credenciales eliminados.", Severity.Error);
+}
+else
+{
+    Snackbar.Add("Credenciales almacenados.", Severity.Success);
+}
 }
 }

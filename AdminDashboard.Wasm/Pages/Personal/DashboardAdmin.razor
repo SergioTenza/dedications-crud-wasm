@@ -1,8 +1,8 @@
 ﻿@page "/personal/dashboardadmin"
+@attribute [Authorize]
+@inject IUserService UserService
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Panel de Control de Administrador</MudText>
 <MudGrid></MudGrid>
 
-@code {
-    
-}
+@code { }
