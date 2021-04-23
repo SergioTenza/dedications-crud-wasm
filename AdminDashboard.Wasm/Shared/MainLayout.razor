@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
 
 
 <MudThemeProvider Theme="_themeManager.Theme" />
@@ -6,41 +8,45 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="4">
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.MdAndUp">
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.Xs">
-            <MudText Typo="Typo.h6" Class="ml-4">Panel de Administracion</MudText>
-        </MudHidden>
-        <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
-            <MudText Typo="Typo.subtitle2">Panel de Administracion</MudText>
-        </MudHidden>
-        <MudAppBarSpacer />
-        <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
-            <ActivatorContent>
-                <MudAvatar Image="images/avatar.png" />
-            </ActivatorContent>
-            <ChildContent>
-                <PersonCard Class="mt-n2" />
-                <MudDivider Class="mb-2" />
-                <MudListItem Text="Account" Icon="@Icons.Material.Outlined.Person" Href="/personal/account" />
-                <MudListItem Text="Logout" Icon="@Icons.Material.Outlined.Login" Href="/pages/authentication/login" />
-            </ChildContent>
-        </MudMenu>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="25" ClipMode="_themeManager.DrawerClipMode">
-        <NavMenu />
-    </MudDrawer>
+    @if (AuthenticationService.User != null)
+    {
+        <MudAppBar Elevation="4">
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.Xs">
+                <MudText Typo="Typo.h6" Class="ml-4">Panel de Administracion</MudText>
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+                <MudText Typo="Typo.subtitle2">Panel de Administracion</MudText>
+            </MudHidden>
+            <MudAppBarSpacer />
+            <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                <ActivatorContent>
+                    <MudAvatar Image="images/avatar.png" />
+                </ActivatorContent>
+                <ChildContent>
+                    <PersonCard Class="mt-n2" />
+                    <MudDivider Class="mb-2" />
+                    <MudListItem Text="Account" Icon="@Icons.Material.Outlined.Person" Href="/personal/account" />
+                    <MudListItem Text="Logout" Icon="@Icons.Material.Outlined.Login" Href="/pages/authentication/login" OnClick=@(()=>(AuthenticationService.Logout()))/>
+                </ChildContent>
+            </MudMenu>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="25" ClipMode="_themeManager.DrawerClipMode">
+            <NavMenu />
+        </MudDrawer>
+     }
+
     <MudMainContent>
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudToolBar DisableGutters="true">
                 <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
                 <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
-                <MudToolBarSpacer />                
+                <MudToolBarSpacer />
             </MudToolBar>
         </MudHidden>
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
@@ -49,40 +55,38 @@
     </MudMainContent>
 </MudLayout>
 
-@code {
-    private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
+@code { private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
 
-    public bool _drawerOpen = true;
-    public bool _themeManagerOpen = false;
+            public bool _drawerOpen = true;
+            public bool _themeManagerOpen = false;
 
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
+            void DrawerToggle()
+            {
+                _drawerOpen = !_drawerOpen;
+            }
 
-    void OpenThemeManager(bool value)
-    {
-        _themeManagerOpen = value;
-    }
+            void OpenThemeManager(bool value)
+            {
+                _themeManagerOpen = value;
+            }
 
-    void UpdateTheme(ThemeManagerTheme value)
-    {
-        _themeManager = value;
-        StateHasChanged();
-    }
+            void UpdateTheme(ThemeManagerTheme value)
+            {
+                _themeManager = value;
+                StateHasChanged();
+            }
 
-    protected override void OnInitialized()
-    {
-        _themeManager.Theme = new MudBlazorAdminDashboard();
-        _themeManager.DrawerClipMode = DrawerClipMode.Always;
-        _themeManager.FontFamily = "Montserrat";
-        _themeManager.DefaultBorderRadius = 3;
-    }
+            protected override void OnInitialized()
+            {
+                _themeManager.Theme = new MudBlazorAdminDashboard();
+                _themeManager.DrawerClipMode = DrawerClipMode.Always;
+                _themeManager.FontFamily = "Montserrat";
+                _themeManager.DefaultBorderRadius = 3;
+            }
 
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+            private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
 {
         new BreadcrumbItem("Personal", href: "/personal/account"),
         new BreadcrumbItem("Dashboard", href: "/personal/dashboard"),
         new BreadcrumbItem("DashboardAdmin", href: "/personal/dashboardadmin"),
-    };
-}
+    }; }

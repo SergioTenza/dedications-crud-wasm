@@ -8,6 +8,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using MudBlazor.Services;
+using AdminDashboard.Wasm.State;
+using AdminDashboard.Wasm.Helpers;
+using AdminDashboard.Wasm.Services;
 
 namespace AdminDashboard.Wasm
 {
@@ -18,11 +21,33 @@ namespace AdminDashboard.Wasm
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services
+                .AddScoped<IAuthenticationService, AuthenticationService>()
+                .AddScoped<IUserService, UserService>()
+                .AddScoped<IHttpService, HttpService>()
+                .AddScoped<ILocalStorageService, LocalStorageService>();
+
+            // configure http client
+            builder.Services.AddScoped(x => {
+                var apiUrl = new Uri(builder.Configuration["apiUrl"]);
+
+                // use fake backend if "fakeBackend" is "true" in appsettings.json
+                if (builder.Configuration["fakeBackend"] == "true")
+                    return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
+
+                return new HttpClient() { BaseAddress = apiUrl };
+            });
 
             builder.Services.AddMudServices();
 
-            await builder.Build().RunAsync();
+            builder.Services.AddSingleton<ProfileService>();
+
+            var host = builder.Build();
+
+            var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
+            await authenticationService.Initialize();
+
+            await host.RunAsync();
         }
     }
 }
