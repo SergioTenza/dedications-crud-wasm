@@ -1,4 +1,5 @@
-﻿@page "/pages/authentication/login"
+﻿@page "/"
+@page "/pages/authentication/login"
 @layout LoginLayout
 @inject ISnackbar Snackbar
 @using System.Net.Http
@@ -24,18 +25,11 @@
 </div>
 
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick=@HandleValidSubmit FullWidth="true">
-    @if (loading)
-    {
-<MudProgressCircular Color="Color.Default" Indeterminate="true"/>}
-    Ingresa
-</MudButton>
-@if (!string.IsNullOrEmpty(error))
-{
-    Snackbar.Add(@error, Severity.Error);
-}
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" OnClick=@HandleValidSubmit FullWidth="true">@if (loading){<MudProgressCircular Color="Color.Default" Indeterminate="true"/>}Ingresa</MudButton>
+@if (!string.IsNullOrEmpty(error)){Snackbar.Add(@error, Severity.Error);}
 
-@code {string Password { get; set; } = "SamplePassWord";
+@code {
+    string Password { get; set; } = "SamplePassWord";
     private bool loading;
     private string error;
 
@@ -50,7 +44,7 @@
         // redirect to home if already logged in
         if (AuthenticationService.User != null)
         {
-            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/personal/dashboardadmin");
         }
     }
     private async void HandleValidSubmit()
@@ -59,10 +53,11 @@
         try
         {
             await AuthenticationService.Login(model.Email, model.Password);
-            var returnUrl = NavigationManager.QueryString("returnUrl") ?? "/";            
-            NavigationManager.NavigateTo(returnUrl);
+            Snackbar.Add("login correcto",Severity.Success);
             loading = false;
-            Console.WriteLine(AuthenticationService.User.UserName);
+            var returnUrl = NavigationManager.QueryString("returnUrl") ?? "/personal/dashboardadmin";            
+            NavigationManager.NavigateTo(returnUrl);
+                        
         }
         catch (Exception ex)
         {
@@ -74,35 +69,36 @@
 
     void TogglePasswordVisibility()
     {
-@if (PasswordVisibility)
-{
-    PasswordVisibility = false;
-    PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
-    PasswordInput = InputType.Password;
-}
-else
-{
-    PasswordVisibility = true;
-    PasswordInputIcon = Icons.Material.Filled.Visibility;
-    PasswordInput = InputType.Text;
-}}
-        void ToggleCheckBox()
+        if (PasswordVisibility)
         {
-            if (CheckBoxRememberMe)
-            {
-                Snackbar.Add("Credenciales eliminados.", Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add("Credenciales almacenados.", Severity.Success);
-            }
+            PasswordVisibility = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
         }
-        private class Model
+        else
         {
-            [Required]
-            public string Email { get; set; }
+            PasswordVisibility = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+    void ToggleCheckBox()
+    {
+        if (CheckBoxRememberMe)
+        {
+            Snackbar.Add("Credenciales eliminados.", Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("Credenciales almacenados.", Severity.Success);
+        }
+    }
+    private class Model
+    {
+        [Required]
+        public string Email { get; set; }
 
-            [Required]
-            public string Password { get; set; }
-        }
+        [Required]
+        public string Password { get; set; }
+    }
 }

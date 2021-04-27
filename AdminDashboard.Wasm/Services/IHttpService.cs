@@ -34,6 +34,7 @@ namespace AdminDashboard.Wasm.Services
         )
         {
             _httpClient = httpClient;
+           
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
             _configuration = configuration;
@@ -46,7 +47,7 @@ namespace AdminDashboard.Wasm.Services
         }
 
         public async Task<T> Post<T>(string uri, object value)
-        {
+        {   
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
             return await sendRequest<T>(request);
@@ -60,14 +61,15 @@ namespace AdminDashboard.Wasm.Services
             var user = await _localStorageService.GetItem<User>("user");
             var isApiUrl = !request.RequestUri.IsAbsoluteUri;
             if (user != null && isApiUrl)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
-
+                //_httpClient.DefaultRequestHeaders.Add("x-access-token", user.Token);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);  
+                //request.Headers.Accept.ToString(),"application/json";
             using var response = await _httpClient.SendAsync(request);
 
             // auto logout on 401 response
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _navigationManager.NavigateTo("logout");
+                _navigationManager.NavigateTo("/pages/authentication/logout");
                 return default;
             }
 
