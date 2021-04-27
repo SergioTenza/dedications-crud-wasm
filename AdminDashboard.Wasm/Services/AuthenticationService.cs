@@ -8,7 +8,7 @@ namespace AdminDashboard.Wasm.Services
     {
         User User { get; }
         Task Initialize();
-        Task Login(string username, string password);
+        Task Login(string email, string password);
         Task Logout();
     }
 
