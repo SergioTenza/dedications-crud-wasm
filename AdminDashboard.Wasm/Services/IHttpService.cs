@@ -61,9 +61,11 @@ namespace AdminDashboard.Wasm.Services
             var user = await _localStorageService.GetItem<User>("user");
             var isApiUrl = !request.RequestUri.IsAbsoluteUri;
             if (user != null && isApiUrl)
-                //_httpClient.DefaultRequestHeaders.Add("x-access-token", user.Token);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);  
-                //request.Headers.Accept.ToString(),"application/json";
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+                request.Headers.Add("x-access-token", user.Token);
+            }
+            
             using var response = await _httpClient.SendAsync(request);
 
             // auto logout on 401 response
