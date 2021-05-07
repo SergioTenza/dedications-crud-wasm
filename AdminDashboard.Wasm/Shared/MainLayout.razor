@@ -62,40 +62,42 @@
     
 </MudLayout>
 
-@code { private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
+@code {
+    private ThemeManagerTheme _themeManager = new ThemeManagerTheme();
 
-            public bool _drawerOpen = true;
-            public bool _themeManagerOpen = false;
+    public bool _drawerOpen = true;
+    public bool _themeManagerOpen = false;
            
 
            
-            void DrawerToggle()
-            {
-                _drawerOpen = !_drawerOpen;
-            }
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
 
-            void OpenThemeManager(bool value)
-            {
-                _themeManagerOpen = value;
-            }
+    void OpenThemeManager(bool value)
+    {
+        _themeManagerOpen = value;
+    }
 
-            void UpdateTheme(ThemeManagerTheme value)
-            {
-                _themeManager = value;
-                StateHasChanged();
-            }
+    void UpdateTheme(ThemeManagerTheme value)
+    {
+        _themeManager = value;
+        StateHasChanged();
+    }
 
-            protected override void OnInitialized()
-            {
-                _themeManager.Theme = new MudBlazorAdminDashboard();
-                _themeManager.DrawerClipMode = DrawerClipMode.Always;
-                _themeManager.FontFamily = "Montserrat";
-                _themeManager.DefaultBorderRadius = 3;
-            }
+    protected override void OnInitialized()
+    {
+        _themeManager.Theme = new MudBlazorAdminDashboard();
+        _themeManager.DrawerClipMode = DrawerClipMode.Always;
+        _themeManager.FontFamily = "Montserrat";
+        _themeManager.DefaultBorderRadius = 3;
+    }
 
-            private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-{
-        new BreadcrumbItem("Personal", href: "/personal/account"),
-        new BreadcrumbItem("Dashboard", href: "/personal/dashboard"),
-        new BreadcrumbItem("DashboardAdmin", href: "/personal/dashboardadmin"),
-    }; }
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+    new BreadcrumbItem("Personal", href: "/personal/account"),
+    new BreadcrumbItem("Dashboard", href: "/personal/dashboard"),
+    new BreadcrumbItem("DashboardAdmin", href: "/personal/dashboardadmin"),
+    };
+}

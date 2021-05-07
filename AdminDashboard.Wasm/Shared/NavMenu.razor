@@ -5,12 +5,16 @@
 <MudNavMenu>
     <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">Opciones</MudText>
     @if (AuthenticationService.User != null)
-    {
+     {
+        <MudNavLink Href="/personal/account" Icon="@Icons.Material.Outlined.Person">Mi cuenta</MudNavLink> 
+     }
+     else
+     {
+        <MudNavLink Href="/personal/dashboardadmin" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Panel Control Admin</MudNavLink>
+        <MudNavLink Href="/personal/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Panel Control</MudNavLink>
+     }
 
-    }
-    <MudNavLink Href="/personal/dashboardadmin" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Panel Control Admin</MudNavLink>
-    <MudNavLink Href="/personal/dashboard" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">Panel Control</MudNavLink>
-    <MudNavLink Href="/personal/account" Icon="@Icons.Material.Outlined.Person">Mi cuenta</MudNavLink>        
+
 </MudNavMenu>
 
 @code {
