@@ -1,11 +1,13 @@
-﻿<MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
+﻿@inject IAuthenticationService AuthenticationService
+
+<MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
     <MudCardHeader>
         <CardHeaderAvatar>
             <MudAvatar Image="images/avatar.png" />
         </CardHeaderAvatar>
         <CardHeaderContent>
-            <MudText Typo="Typo.body2">Sergio Tenza</MudText>
-            <MudText Typo="Typo.caption">Admin</MudText>            
+            <MudText Typo="Typo.body2">@_userName</MudText>
+            <MudText Typo="Typo.caption">@_elevatedRole</MudText>            
         </CardHeaderContent>
     </MudCardHeader>
 </MudCard>
@@ -13,4 +15,20 @@
 @code {
     [Parameter] public string Class { get; set; }
     [Parameter] public string Style { get; set; }
+
+    [Parameter] public string _userName {get;set;}    
+    [Parameter] public string _elevatedRole {get;set;}
+
+    protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (AuthenticationService.User != null)
+        {
+            _userName = AuthenticationService.User.UserName;
+            if (AuthenticationService.User.Roles != null)
+            {
+                _elevatedRole = AuthenticationService.User.Roles[0];    
+            }            
+        }
+    }    
 }

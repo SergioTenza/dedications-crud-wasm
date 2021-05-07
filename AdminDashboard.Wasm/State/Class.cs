@@ -29,6 +29,32 @@
                 ProfileService.OnChange -= StateHasChanged;
             }
         }
+
+
+        protected override void OnInitialized()
+    {
+        // redirect to home if already logged in
+        if (AuthenticationService.User != null)
+        {
+            _userName = AuthenticationService.User.UserName;
+            for (var i = 0; i < AuthenticationService.User.Roles.Count(); i++)
+            {
+                   if (AuthenticationService.User.Roles[i] == "admin")
+                   {
+                       _elevatedRole = AuthenticationService.User.Roles[i];                       
+                   }
+                   else
+                   {
+                       _elevatedRole = "customer";
+                   }
+            }            
+        }
+        else
+        {
+            _userName = "Invitado";
+            _elevatedRole = "Haga Login";
+        }
+    }
      */
 }
 

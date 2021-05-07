@@ -8,6 +8,7 @@ namespace AdminDashboard.Wasm.Services
     public interface IUserService
     {
         Task<IEnumerable<User>> GetAll();
+        Task<IEnumerable<User>> UserInfo();
     }
 
     public class UserService : IUserService
@@ -22,6 +23,11 @@ namespace AdminDashboard.Wasm.Services
         public async Task<IEnumerable<User>> GetAll()
         {
             return await _httpService.Get<IEnumerable<User>>("/users");
+        }
+
+        public async Task<IEnumerable<User>> UserInfo()
+        {
+            return await _httpService.Get<IEnumerable<User>>("/users/userInfo");
         }
     }
 }
